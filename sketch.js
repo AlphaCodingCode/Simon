@@ -6,6 +6,8 @@ let simonsTurn = true;
 
 let lightupDelay = 0;
 let currentSimonIndex = 0;
+
+
 let lightout = false;
 let lightoutTimer = 0;
 
@@ -16,9 +18,6 @@ function setup() {
     createCanvas(window.innerWidth, window.innerHeight);
 }
 
-/*
-    The draw function is executed once per frame.
-*/
 function draw() {
     // Update
     // if it's a lights out turn wait 60 frames
@@ -32,16 +31,16 @@ function draw() {
         if (simonsTurn) {
             guesses = [];
             // if simon's history has an index, currentSimonIndex, light up that square for delay time
-            if (simonHistory.length - 1 >= currentSimonIndex && lightupDelay == 0) {
+            if (simonHistory.length > currentSimonIndex && lightupDelay == 0) {
                 lightupSquare = simonHistory[currentSimonIndex];
                 lightupDelay = 45;
                 currentSimonIndex++;
                 lightoutTimer = 45;
                 lightout = true;
-            } else if (simonHistory.length - 1 < currentSimonIndex && lightupDelay == 0) {
+            } else if (simonHistory.length <= currentSimonIndex && lightupDelay == 0) {
                 // show the newly added square
                 simonHistory.push(round(random(0, 3)));
-                lightupSquare = simonHistory[simonHistory.length - 1];
+                lightupSquare = simonHistory[currentSimonIndex];
                 currentSimonIndex = 0;
                 lightupDelay = 60;
                 simonsTurn = false;
@@ -50,10 +49,12 @@ function draw() {
             }
 
         }
+
         if (guesses.length > 0 && guesses.length == simonHistory.length) {
             simonsTurn = true;
             lightupDelay = 45;
         }
+
         lightupDelay = constrain(lightupDelay - 1, 0, 60);
 
     }
@@ -64,8 +65,9 @@ function draw() {
 
 
 function mouseClicked() {
-    if (simonsTurn)
+    if (simonsTurn && lightupDelay < 0) {
         return;
+    }
     // check which square was clicked, and add it to the guess array
     if (mouseX <= width / 2 && mouseY <= height / 2) {
         // 0
@@ -85,11 +87,11 @@ function mouseClicked() {
         lightupSquare = 3;
     }
     // check guesses so far match simonHistory
-    for (let i = 0; i < guesses.length; i++) {
-        if (guesses[i] != simonHistory[i]) {
-            // wrong guess
-        }
+    if (guesses[guesses.length - 1] != simonHistory[guesses.length - 1]) {
+        // guees was wrong!
+        console.log("WRONG!");
     }
+
     // guess was correct
 }
 
